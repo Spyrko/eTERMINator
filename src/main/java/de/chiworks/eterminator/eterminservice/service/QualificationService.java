@@ -19,7 +19,8 @@ public class QualificationService {
     private final TerminService terminService;
 
     public Map<String, QualificationGroup> queryQualifications() {
-        QualificationQueryResult result = terminService.getQualifications();
+        QualificationQueryResult result = terminService.getQualifications().block();
+        // TODO get rid of possible NPE
         return result.getW().entrySet().stream().map(QualificationService::toGroup).collect(Collectors.toMap(QualificationGroup::getName, Function.identity()));
     }
 

@@ -5,6 +5,7 @@ import de.chiworks.eterminator.eterminservice.data.QualificationSubgroup;
 import de.chiworks.eterminator.eterminservice.data.SearchParameters;
 import de.chiworks.eterminator.eterminservice.service.QualificationService;
 import de.chiworks.eterminator.eterminservice.service.TerminService;
+import de.chiworks.eterminator.quartz.QuartzService;
 import de.chiworks.eterminator.telegram.SendService;
 import de.chiworks.eterminator.telegram.user.User;
 import lombok.Data;
@@ -31,13 +32,15 @@ public class StartCommand extends Command<StartCommand.Status> {
     private final InlineKeyboardMarkup radiusKeyboard = createRadiusKeyboard();
 
     private final InlineKeyboardMarkup qualificationGroupKeyboard;
+    private final QuartzService quartzService;
 
     private InlineKeyboardMarkup qualificationSubgroupKeyboard;
 
-    StartCommand(SendService sendService, QualificationService qualificationService, TerminService terminService) {
+    StartCommand(SendService sendService, QualificationService qualificationService, TerminService terminService, QuartzService quartzService) {
         this.sendService = sendService;
         this.terminService = terminService;
         qualificationGroups = qualificationService.queryQualifications();
+        this.quartzService = quartzService;
         qualificationGroupKeyboard = createQualificationGroupKeyboard();
     }
 
@@ -110,7 +113,7 @@ public class StartCommand extends Command<StartCommand.Status> {
     private void startSearchForAppointment(User user, Status status) {
         sendService.send(user, "Thank you. I've everything I need. I will inform you, when I see an open appointment slot.");
         user.setSearchParameters(status.toSearchParameters());
-        // TODO: trigger quartz job
+        quartzService.scheduleSearchJob(user);
     }
 
     private void receiveRadius(User user, String command, Status status) {

@@ -4,6 +4,7 @@ import de.chiworks.eterminator.telegram.SendService;
 import de.chiworks.eterminator.telegram.user.User;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import static de.chiworks.eterminator.telegram.command.CommandStrings.HELP_COMMAND;
@@ -13,6 +14,7 @@ import static java.util.stream.Collectors.joining;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class HelpCommand extends Command<VoidStatus> {
 
     private final SendService sendService;
